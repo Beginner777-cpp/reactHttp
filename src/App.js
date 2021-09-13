@@ -1,58 +1,63 @@
 import React, { Component } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "./App.css";
-import 'react-toastify/dist/ReactToastify.css'
-import http from './services/httpService.js';
-import config from './config.json';
+import "react-toastify/dist/ReactToastify.css";
+import http from "./services/httpService.js";
+import config from "./config.json";
 
 class App extends Component {
   state = {
-    posts: []
+    posts: [],
   };
 
   async componentDidMount() {
     const { data: posts } = await http.get(config.apiEndpoint);
-    this.setState({ posts })
+    this.setState({ posts });
   }
 
   handleAdd = async () => {
-    const newPost = { title: 'a', body: 'b' };
+    const newPost = { title: "a", body: "b" };
     const { data: post } = await http.post(config.apiEndpoint, newPost);
     const posts = [post, ...this.state.posts];
     this.setState({ posts });
   };
 
-  handleUpdate = async post => {
+  handleUpdate = async (post) => {
     const originalPosts = this.state.posts;
     const posts = this.state.posts;
     const index = posts.indexOf(post);
     posts[index] = post;
     this.setState({ posts });
-    post.title = 'updated';
+    post.title = "updated";
     try {
-      const updatedPost = await http.put(config.apiEndpoint + '/' + post.id, post)
+      const updatedPost = await http.put(
+        config.apiEndpoint + "/" + post.id,
+        post
+      );
       // const updatedPost = await http.patch(config.apiEndpoint + '/' + post.id, {title: post.title});
       // throw new Error('error');
     } catch (error) {
       console.log(error);
       this.setState({ posts: originalPosts });
     }
-
-
   };
 
-  handleDelete = async post => {
+  handleDelete = async (post) => {
     const originalPosts = this.state.posts;
-    const posts = this.state.posts.filter(p => p.id !== post.id);
+    const posts = this.state.posts.filter((p) => p.id !== post.id);
     this.setState({ posts });
     try {
-      const deletedPost = await http.delete(config.apiEndpoint + 'sdg/' + post.id);
+      const deletedPost = await http.delete(config.apiEndpoint + "/" + post.id);
     } catch (error) {
-      if (error.response && error.response.status >= 400 && error.response.status < 500) {
-        toast.error('Post has already been deleted')
+      if (
+        error.response &&
+        error.response.status >= 400 &&
+        error.response.status < 500
+      ) {
+        toast.error("Post has already been deleted");
       }
 
-      this.setState({ posts: originalPosts })
+      this.setState({ posts: originalPosts });
     }
   };
 
@@ -72,7 +77,7 @@ class App extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.posts.map(post => (
+            {this.state.posts.map((post) => (
               <tr key={post.id}>
                 <td>{post.title}</td>
                 <td>
@@ -101,8 +106,3 @@ class App extends Component {
 }
 
 export default App;
-
-
-
-
-
